@@ -6,15 +6,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        * {
+            font-family: Cambria, Arial;
+            background-color: rgb(214, 203, 203);
+        }
+
+        button {
+            font-size: 2vh;
+        }
+
         #canvas {
             cursor: none;
+            border: solid black;
+            margin: auto;
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgb(226, 247, 239);
         }
     </style>
 </head>
 <body>
-    <h1 id="points"></h1>
+    
+    <div id="pointsTimer">
+        <h1 id="points"></h1>
+        <h1 id="timer"></h1> <br><br><br><br>
+    </div>
+    
     <canvas id="canvas" height="500" width="500"></canvas>
     <script src="script.js"></script>
-    <button onclick="gamemodes.mod.nocolor()">No Color</button>
+    <div>
+        <h1>Mods</h1>
+        <h3>Color</h3>
+        <button id="colormod" onclick="gamemodes.mod.nocolor()">Off</button>
+        <h3>Size</h3> 
+        <button id="sizemod" onclick="gamemodes.mod.sizemod()">Off</button>
+        <h3 id="difficultyHeader">Difficulty</h3> 
+        <button onclick="gamemodes.difficulty = difficultyID.easiest">Easiest</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.easy">Easy</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.normal">Normal</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.hard">Hard</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.expert">Expert</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.expertplus">Expert Plus</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.impossible">Impossible</button><br>
+        <button onclick="gamemodes.difficulty = difficultyID.impossibler">Impossibler</button><br>
+    </div>
+    <p><a href="https://github.com/morbioseJuice/whereSquareDefinitiveEdition">Source Code</a></p>
 </body>
 </html>
