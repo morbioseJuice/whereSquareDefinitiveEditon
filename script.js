@@ -5,7 +5,8 @@ var sw = screen.width;
 var sh = screen.height;
 
 var fish = [[250, 250, 10, 1, 1]]; //x, y, size, diry, dirx
-var maxSize = 50;
+var maxSize = 200;
+var maxIncreaseSize = 50;
 var mx;
 var my;
 
@@ -54,7 +55,7 @@ document.body.onkeyup = function(e) { //checks for pressed keys
 
 var difficultyID = {
     easier: 100,
-    easy: 10,
+    easy: 20,
     normal: 5,
     hard: 2,
     expert: 1,
@@ -63,11 +64,15 @@ var difficultyID = {
     impossibler: 0.01
 }
 
+if (localStorage.getItem('difficulty') == null) { // Make sure the localStorage "difficulty" exists, before declaring gamemodes.difficulty.
+    localStorage.setItem('difficulty', difficultyID.normal)
+}
+
 var gamemodes = {
     sizemod: false, // When eating enemies, increases size by their size
     halfdamage: false, // When getting hit, you lose only half points *TRASH*
     mousefollow: true, // Square follows mouse. Intended gameplay.
-    difficulty: difficultyID.normal, // formula: 1 to 50 size for alls squares, plus POINTS divided by DIFFICULTY (increases size the smaller the number is.)
+    difficulty: localStorage.getItem('difficulty'), // formula: 1 to 50 size for alls squares, plus POINTS divided by DIFFICULTY (increases size the smaller the number is.)
     nocolor: false, //does not tell you what you can eat
     mod: {
         sizemod() {
@@ -143,6 +148,10 @@ var rand = function(n) { //A random number
 var rand2 = function() { //A random number with specifics
     val = rand(5) - 4;
     return rand(5) - 4;
+}
+
+var chance = function(x) {
+    return (Math.random() < x);
 }
 
 var RRcollide = function(x1, x2, y1, y2, w1, w2, h1, h2){ //rect-rect colliding
@@ -226,20 +235,50 @@ var update = function() {
         }
         ctx.fillRect(fish[i][0], fish[i][1], fish[i][2], fish[i][2])
     }
-
-    if (rand(100) > 90) { // 10 percent chance every frame to summon square
-        num = rand(4);
-        if (num == 1) {
-            fish.push([rand(500), 0, rand(maxSize) + player.points / gamemodes.difficulty, rand2(), Math.abs(rand2())])
-        }
-        if (num == 2) {
-            fish.push([rand(500), 500, rand(maxSize) + player.points / gamemodes.difficulty, rand2(), -Math.abs(rand2())])
-        }
-        if (num == 3) {
-            fish.push([0, rand(500), rand(maxSize) + player.points / gamemodes.difficulty, Math.abs(rand2()), rand2()])
-        }
-        if (num == 4) {
-            fish.push([500, rand(500), rand(maxSize) + player.points / gamemodes.difficulty, -Math.abs(rand2()), rand2()])
+    
+    if (chance(0.1)) { // 10 percent chance every frame to summon square
+        if (gamemodes.difficulty == difficultyID.easy) { // If its easy mode, this special code will run.
+        	if (chance(0.14)) { //percent chance to spawn a square larger.
+            	var bigOrSmall = 1 //When this is = to 1, it leaves the "rand(30)" a couple lines down positive, making the square bigger.
+            } else {
+                var bigOrSmall = -1 //When this is = to 1, it leaves the "rand(30)" a couple lines down negative, making the square smaller.
+            }
+            num = rand(4);
+            if (num == 1) {
+                fish.push([rand(500), 0, 
+                           Math.min(maxSize, Math.max(rand(8), player.points + (rand(30) * bigOrSmall))), //For this for size calcs, I take the max between a small number (1-8) rand
+                           rand2(), Math.abs(rand2())])
+            }
+            if (num == 2) {
+                fish.push([rand(500), 500, 
+                           Math.min(maxSize, Math.max(rand(8), player.points + (rand(30) * bigOrSmall))), //and another thing which could be negative which is a problem. Negative
+                           rand2(), -Math.abs(rand2())])
+            }
+            if (num == 3) {
+                fish.push([0, rand(500), 
+                           Math.min(maxSize, Math.max(rand(8), player.points + (rand(30) * bigOrSmall))), //squares break everything. Then I take the min of that, and the maxSize, so
+                           Math.abs(rand2()), rand2()])
+            }
+            if (num == 4) {
+                fish.push([500, rand(500), 
+                           Math.min(maxSize, Math.max(rand(8), player.points + (rand(30) * bigOrSmall))), //when you're big enough, you basically just insta-win.
+                           -Math.abs(rand2()), rand2()])
+            }
+    	}
+        else {
+            num = rand(4);
+            if (num == 1) {
+                fish.push([rand(500), 0, Math.min(maxSize, rand(maxIncreaseSize) + player.points / gamemodes.difficulty), rand2(), Math.abs(rand2())])
+            }
+            if (num == 2) {
+                fish.push([rand(500), 500, Math.min(maxSize, rand(maxIncreaseSize) + player.points / gamemodes.difficulty), rand2(), -Math.abs(rand2())])
+            }
+            if (num == 3) {
+                fish.push([0, rand(500), Math.min(maxSize, rand(maxIncreaseSize) + player.points / gamemodes.difficulty), Math.abs(rand2()), rand2()])
+            }
+            if (num == 4) {
+                fish.push([500, rand(500), Math.min(maxSize, rand(maxIncreaseSize) + player.points / gamemodes.difficulty), -Math.abs(rand2()), rand2()])
+            }
         }
     }
 
